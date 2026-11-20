@@ -1,0 +1,46 @@
+name: Update HTTP Proxy List
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch and update proxies
+        run: |
+          curl -s "https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/http_proxies.txt" > all.txt
+          curl -s "https://raw.githubusercontent.com/officialputuid/ProxyForEveryone/refs/heads/main/https/https.txt" >> all.txt
+          curl -s "https://raw.githubusercontent.com/ProxyScraper/ProxyScraper/refs/heads/main/http.txt" >> all.txt
+          curl -s "https://openproxylist.xyz/https.txt" >> all.txt
+          curl -s "https://github.com/Anonym0usWork1221/Free-Proxies/raw/refs/heads/main/proxy_files/http_proxies.txt" >> all.txt
+          curl -s "https://api.openproxylist.xyz/http.txt" >> all.txt
+          curl -s "https://raw.githubusercontent.com/databay-labs/free-proxy-list/refs/heads/master/http.txt" >> all.txt
+          curl -s "https://raw.githubusercontent.com/ErcinDedeoglu/proxies/main/proxies/https.txt" >> all.txt
+          curl -s "https://github.com/Thordata/awesome-free-proxy-list/raw/refs/heads/main/proxies/http.txt" >> all.txt
+          curl -s "https://raw.githubusercontent.com/proxygenerator1/ProxyGenerator/refs/heads/main/Stable/http.txt" >> all.txt
+          curl -s "https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/http.txt" >> all.txt
+          curl -s "https://free-proxy-list.net/anonymous-proxy.html" >> all.txt
+          curl -s "https://raw.githubusercontent.com/VPSLabCloud/VPSLab-Free-Proxy-List/main/http_anonymous.txt" >> all.txt
+          curl -s "https://github.com/chekamarue/proxies/raw/refs/heads/main/https.txt" >> all.txt
+          curl -s "https://free-proxy-list.net/" >> all.txt
+          curl -s "https://raw.githubusercontent.com/VPSLabCloud/VPSLab-Free-Proxy-List/refs/heads/main/http_ssl.txt" >> all.txt
+          curl -s "https://raw.githubusercontent.com/VPSLabCloud/VPSLab-Free-Proxy-List/refs/heads/main/http_elite.txt" >> all.txt
+          sort -u all.txt -o all.txt
+          
+
+      - name: Commit and push updated file
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          date -u > timestamp.txt
+          git add all.txt timestamp.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update HTTP proxy list and keepalive timestamp" && git push)
